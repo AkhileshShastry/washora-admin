@@ -1,0 +1,24 @@
+{
+  "name": "Washora Laundry Admin",
+  "short_name": "Washora",
+  "description": "Laundry delivery tracking, pricing, expenses, and collections dashboard.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6fbff",
+  "theme_color": "#0f3d7a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/washora-logo.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/washora-logo.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

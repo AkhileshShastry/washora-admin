@@ -1,0 +1,105 @@
+[debug] [2026-09-04T16:29:16.378Z] ----------------------------------------------------------------------
+[debug] [2026-09-04T16:29:16.383Z] Command:       C:\nvm4w\nodejs\node.exe C:\Users\Nithasha\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js deploy --only firestore:rules --non-interactive
+[debug] [2026-09-04T16:29:16.384Z] CLI Version:   15.29.0
+[debug] [2026-09-04T16:29:16.385Z] Platform:      win32
+[debug] [2026-09-04T16:29:16.386Z] Node Version:  v22.13.0
+[debug] [2026-09-04T16:29:16.387Z] Detected Agent: codex_cli
+[debug] [2026-09-04T16:29:16.388Z] Time:          Fri Sep 04 2026 21:59:16 GMT+0530 (India Standard Time)
+[debug] [2026-09-04T16:29:16.389Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-09-04T16:29:20.177Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-09-04T16:29:20.178Z] > authorizing via signed-in user (washora.team@gmail.com)
+[debug] [2026-09-04T16:29:20.178Z] [iam] checking project washora-admin-8110f for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2026-09-04T16:29:20.200Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:20.200Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:20.203Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions [none]
+[debug] [2026-09-04T16:29:20.204Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions  x-goog-user-project=washora-admin-8110f
+[debug] [2026-09-04T16:29:20.204Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2026-09-04T16:29:22.293Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions 200
+[debug] [2026-09-04T16:29:22.293Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'washora-admin-8110f'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-09-04T16:29:22.302Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:22.303Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:22.304Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/washora-admin-8110f/services/firestore.googleapis.com [none]
+[debug] [2026-09-04T16:29:22.305Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/washora-admin-8110f/services/firestore.googleapis.com  x-goog-user-project=washora-admin-8110f
+[debug] [2026-09-04T16:29:24.740Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/washora-admin-8110f/services/firestore.googleapis.com 200
+[debug] [2026-09-04T16:29:24.740Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/washora-admin-8110f/services/firestore.googleapis.com [omitted]
+[info] +  firestore: required API firestore.googleapis.com is enabled 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-09-04T16:29:24.763Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:24.764Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:24.764Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/washora-admin-8110f/databases/(default) [none]
+[debug] [2026-09-04T16:29:26.009Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/washora-admin-8110f/databases/(default) 200
+[debug] [2026-09-04T16:29:26.009Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/washora-admin-8110f/databases/(default) {"name":"projects/washora-admin-8110f/databases/(default)","uid":"b80b2a86-7bc5-454d-83a0-8e88cae255e8","createTime":"2026-09-04T14:02:46.820280Z","updateTime":"2026-09-04T14:02:46.820280Z","locationId":"asia-south1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-09-04T15:29:25.755415Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"j","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","enhancedTextSearchQueryMode":"ENHANCED_QUERY_MODE_ENABLED","etag":"IMePwKys1ZYDMO7nxIWV1ZYD"}
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2026-09-04T16:29:26.015Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:26.016Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:26.017Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f:test [none]
+[debug] [2026-09-04T16:29:26.017Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f:test [omitted]
+[debug] [2026-09-04T16:29:27.923Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f:test 200
+[debug] [2026-09-04T16:29:27.923Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f:test {}
+[info] +  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2026-09-04T16:29:27.926Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:27.926Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:27.927Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/releases pageSize=10&pageToken=
+[debug] [2026-09-04T16:29:29.536Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/releases 200
+[debug] [2026-09-04T16:29:29.536Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/releases {"releases":[{"name":"projects/washora-admin-8110f/releases/cloud.firestore","rulesetName":"projects/washora-admin-8110f/rulesets/06617f64-58e4-426e-bf2b-fd9455a970d4","createTime":"2026-09-04T14:02:57.846363Z","updateTime":"2026-09-04T14:02:57.846363Z"}]}
+[debug] [2026-09-04T16:29:29.539Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:29.540Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:29.542Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/rulesets/06617f64-58e4-426e-bf2b-fd9455a970d4 [none]
+[debug] [2026-09-04T16:29:31.126Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/rulesets/06617f64-58e4-426e-bf2b-fd9455a970d4 200
+[debug] [2026-09-04T16:29:31.126Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/rulesets/06617f64-58e4-426e-bf2b-fd9455a970d4 [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2026-09-04T16:29:31.134Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:31.135Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:31.136Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/rulesets [none]
+[debug] [2026-09-04T16:29:31.136Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/rulesets [omitted]
+[debug] [2026-09-04T16:29:32.630Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/rulesets 200
+[debug] [2026-09-04T16:29:32.631Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/rulesets {"name":"projects/washora-admin-8110f/rulesets/d3c42b99-a862-4841-93d4-54f9bbbe4487","source":{"files":[{"content":"rules_version = '2';\n\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    function isSignedIn() {\n      return request.auth != null;\n    }\n\n    match /{document=**} {\n      allow read, write: if isSignedIn();\n    }\n  }\n}\n","name":"firestore.rules"}]},"createTime":"2026-09-04T16:29:32.577999Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2026-09-04T16:29:32.631Z] [rules] created ruleset projects/washora-admin-8110f/rulesets/d3c42b99-a862-4841-93d4-54f9bbbe4487
+[debug] [2026-09-04T16:29:32.633Z] [rules] releasing cloud.firestore with ruleset projects/washora-admin-8110f/rulesets/d3c42b99-a862-4841-93d4-54f9bbbe4487
+[debug] [2026-09-04T16:29:32.635Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:32.635Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:29:32.636Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/releases/cloud.firestore [none]
+[debug] [2026-09-04T16:29:32.636Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/releases/cloud.firestore {"release":{"name":"projects/washora-admin-8110f/releases/cloud.firestore","rulesetName":"projects/washora-admin-8110f/rulesets/d3c42b99-a862-4841-93d4-54f9bbbe4487"}}
+[debug] [2026-09-04T16:29:34.143Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/releases/cloud.firestore 200
+[debug] [2026-09-04T16:29:34.144Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/washora-admin-8110f/releases/cloud.firestore {"name":"projects/washora-admin-8110f/releases/cloud.firestore","rulesetName":"projects/washora-admin-8110f/rulesets/d3c42b99-a862-4841-93d4-54f9bbbe4487","createTime":"2026-09-04T14:02:57.846363Z","updateTime":"2026-09-04T16:29:34.088401Z"}
+[debug] [2026-09-04T16:29:34.144Z] [rules] updated release projects/washora-admin-8110f/releases/cloud.firestore
+[info] +  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/washora-admin-8110f/overview
+[debug] [2026-09-04T16:30:20.756Z] ----------------------------------------------------------------------
+[debug] [2026-09-04T16:30:20.761Z] Command:       C:\nvm4w\nodejs\node.exe C:\Users\Nithasha\AppData\Local\npm-cache\_npx\7750544ccf494d8b\node_modules\firebase-tools\lib\bin\firebase.js firestore:databases:list --non-interactive
+[debug] [2026-09-04T16:30:20.762Z] CLI Version:   15.29.0
+[debug] [2026-09-04T16:30:20.763Z] Platform:      win32
+[debug] [2026-09-04T16:30:20.764Z] Node Version:  v22.13.0
+[debug] [2026-09-04T16:30:20.765Z] Detected Agent: codex_cli
+[debug] [2026-09-04T16:30:20.766Z] Time:          Fri Sep 04 2026 22:00:20 GMT+0530 (India Standard Time)
+[debug] [2026-09-04T16:30:20.766Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-09-04T16:30:22.960Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-09-04T16:30:22.961Z] > authorizing via signed-in user (washora.team@gmail.com)
+[debug] [2026-09-04T16:30:22.961Z] [iam] checking project washora-admin-8110f for permissions ["datastore.databases.list","firebase.projects.get"]
+[debug] [2026-09-04T16:30:22.979Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:30:22.980Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:30:22.983Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions [none]
+[debug] [2026-09-04T16:30:22.983Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions  x-goog-user-project=washora-admin-8110f
+[debug] [2026-09-04T16:30:22.984Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions {"permissions":["datastore.databases.list","firebase.projects.get"]}
+[debug] [2026-09-04T16:30:24.758Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions 200
+[debug] [2026-09-04T16:30:24.758Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/washora-admin-8110f:testIamPermissions {"permissions":["datastore.databases.list","firebase.projects.get"]}
+[debug] [2026-09-04T16:30:24.760Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:30:24.760Z] Checked if tokens are valid: true, expires at: 1788541430637
+[debug] [2026-09-04T16:30:24.760Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/washora-admin-8110f/databases [none]
+[debug] [2026-09-04T16:30:25.912Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/washora-admin-8110f/databases 200
+[debug] [2026-09-04T16:30:25.913Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/washora-admin-8110f/databases {"databases":[{"name":"projects/washora-admin-8110f/databases/(default)","uid":"b80b2a86-7bc5-454d-83a0-8e88cae255e8","createTime":"2026-09-04T14:02:46.820280Z","updateTime":"2026-09-04T14:02:46.820280Z","locationId":"asia-south1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-09-04T15:30:25.902785Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"j","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","enhancedTextSearchQueryMode":"ENHANCED_QUERY_MODE_ENABLED","etag":"IPSl+cis1ZYDMO7nxIWV1ZYD"}]}
+[info] ┌─────────────────────────────────────────────────────┬────────────────────┬────────────────────┐
+│ Database Name                                       │ Edition            │ Type               │
+├─────────────────────────────────────────────────────┼────────────────────┼────────────────────┤
+│ projects/washora-admin-8110f/databases/(default)    │ STANDARD           │ FIRESTORE_NATIVE   │
+└─────────────────────────────────────────────────────┴────────────────────┴────────────────────┘
