@@ -519,6 +519,12 @@ export const seedExpenses = [
 
 export const seedSettings = {
   staffMembers: ["Nikshepa", "Ranjith"],
+  businessLocation: { latitude: "", longitude: "" },
+  dhobiLocation: { latitude: "", longitude: "" },
+  deliveryRatePerKm: 0,
+  petrolPricePerLitre: 0,
+  vehicleMileageKmPerLitre: 0,
+  fuelCostPerKm: 0,
   orderStatuses: ["Order Placed", "Picked Up", "Dropped at Dhobi", "Ready at Dhobi", "Delivered"],
   paymentStatuses: ["Pending", "Done", "Not delivered"],
   paymentModes: ["UPI", "Cash", "Card", "Bank Transfer"],

@@ -10,6 +10,7 @@ export function Orders({
   orders,
   customers,
   priceItems,
+  settings,
   onDeleteOrder,
   onSaveOrder,
   onStatusChange,
@@ -100,6 +101,7 @@ export function Orders({
         orders={orders}
         customers={customers}
         priceItems={priceItems}
+        settings={settings}
         onClose={() => setModalOpen(false)}
         onSave={onSaveOrder}
       />

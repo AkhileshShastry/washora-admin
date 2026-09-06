@@ -42,6 +42,13 @@ export function OrderCard({ order, onEdit, onDelete, onStatusChange }) {
           <IndianRupee size={15} />
           {order.paymentMode || "Mode pending"}
         </span>
+        {order.deliveryCharge ? (
+          <span>
+            <IndianRupee size={15} />
+            {formatCurrency(order.deliveryCharge)} delivery
+            {order.routeDistanceKm ? ` (${Number(order.routeDistanceKm).toFixed(1)} km)` : ""}
+          </span>
+        ) : null}
       </div>
 
       <p className="order-card__services">{serviceSummary || order.serviceType || "No items"}</p>

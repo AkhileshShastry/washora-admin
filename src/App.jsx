@@ -47,6 +47,7 @@ export default function App() {
     customers: data.customers,
     expenses: data.expenses,
     priceItems: data.priceItems,
+    settings: data.settings,
   };
 
   const page = {
