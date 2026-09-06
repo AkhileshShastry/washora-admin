@@ -1,4 +1,4 @@
-const CACHE_NAME = "washora-admin-v1";
+const CACHE_NAME = "washora-admin-v2";
 const APP_SHELL = ["/", "/index.html", "/manifest.json", "/washora-logo.jpeg"];
 
 self.addEventListener("install", (event) => {
@@ -21,6 +21,24 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") {
+    return;
+  }
+
+  const requestUrl = new URL(event.request.url);
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put("/index.html", clone));
+          return response;
+        })
+        .catch(() => caches.match("/index.html")),
+    );
+    return;
+  }
+
+  if (requestUrl.origin !== self.location.origin) {
     return;
   }
 
