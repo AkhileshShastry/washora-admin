@@ -2,6 +2,11 @@ import { Edit3, Plus, Save, Search, UserRound, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { EmptyState } from "../components/common/EmptyState";
 import { buildCustomerStats } from "../utils/calculations";
+import {
+  calculateDeliveryCharge,
+  calculateFuelCostPerKm,
+  calculateRouteDistanceKm,
+} from "../utils/distance";
 import { formatCurrency, formatDate, makeCustomerId, normalizeSearch } from "../utils/helpers";
 
 const emptyCustomer = {
@@ -10,6 +15,8 @@ const emptyCustomer = {
   phone: "",
   area: "",
   address: "",
+  latitude: "",
+  longitude: "",
   notes: "",
 };
 
@@ -93,6 +100,28 @@ function CustomerModal({ customer, open, onClose, onSave }) {
             <textarea value={draft.address || ""} onChange={(event) => updateField("address", event.target.value)} />
           </label>
 
+          <label>
+            <span>Latitude</span>
+            <input
+              type="number"
+              step="any"
+              value={draft.latitude || ""}
+              onChange={(event) => updateField("latitude", event.target.value)}
+              placeholder="e.g. 12.9141"
+            />
+          </label>
+
+          <label>
+            <span>Longitude</span>
+            <input
+              type="number"
+              step="any"
+              value={draft.longitude || ""}
+              onChange={(event) => updateField("longitude", event.target.value)}
+              placeholder="e.g. 74.8560"
+            />
+          </label>
+
           <label className="form-grid__wide">
             <span>Notes</span>
             <textarea value={draft.notes || ""} onChange={(event) => updateField("notes", event.target.value)} />
@@ -113,7 +142,7 @@ function CustomerModal({ customer, open, onClose, onSave }) {
   );
 }
 
-export function Customers({ customers, orders, onSaveCustomer }) {
+export function Customers({ customers, orders, settings, onSaveCustomer }) {
   const [query, setQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
@@ -125,6 +154,11 @@ export function Customers({ customers, orders, onSaveCustomer }) {
       .map((customer) => ({
         ...customer,
         stats: buildCustomerStats(customer, orders),
+        routeDistanceKm: calculateRouteDistanceKm({
+          business: settings?.businessLocation,
+          customer,
+          dhobi: settings?.dhobiLocation,
+        }),
       }))
       .filter((customer) =>
         search
@@ -134,7 +168,7 @@ export function Customers({ customers, orders, onSaveCustomer }) {
           : true,
       )
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [customers, orders, query]);
+  }, [customers, orders, query, settings]);
 
   const openNewCustomer = () => {
     setEditingCustomer(null);
@@ -197,6 +231,24 @@ export function Customers({ customers, orders, onSaveCustomer }) {
                 <div>
                   <dt>First</dt>
                   <dd>{formatDate(customer.stats.firstOrderDate) || "-"}</dd>
+                </div>
+                <div>
+                  <dt>Route</dt>
+                  <dd>
+                    {customer.routeDistanceKm
+                      ? `${customer.routeDistanceKm.toFixed(1)} km / ${formatCurrency(
+                          calculateDeliveryCharge(
+                            customer.routeDistanceKm,
+                            settings?.fuelCostPerKm ||
+                              calculateFuelCostPerKm(
+                                settings?.petrolPricePerLitre,
+                                settings?.vehicleMileageKmPerLitre,
+                              ) ||
+                              settings?.deliveryRatePerKm,
+                          ),
+                        )}`
+                      : "Add coordinates"}
+                  </dd>
                 </div>
               </dl>
             </article>

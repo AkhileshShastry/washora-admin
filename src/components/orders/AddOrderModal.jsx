@@ -1,6 +1,11 @@
 import { Plus, Save, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { calculateOrderTotals } from "../../utils/calculations";
+import {
+  calculateDeliveryCharge,
+  calculateFuelCostPerKm,
+  calculateRouteDistanceKm,
+} from "../../utils/distance";
 import { formatCurrency, makeReceiptId, toInputDate } from "../../utils/helpers";
 import {
   ORDER_STATUSES,
@@ -42,6 +47,10 @@ function createDraft(order, orders, priceItems) {
     phone: "",
     address: "",
     area: "",
+    latitude: "",
+    longitude: "",
+    routeDistanceKm: 0,
+    deliveryCharge: 0,
     items: [createLine(priceItems)],
     orderStatus: "Order Placed",
     paymentStatus: "Pending",
@@ -57,7 +66,7 @@ function createDraft(order, orders, priceItems) {
   };
 }
 
-export function AddOrderModal({ open, order, orders, customers, priceItems, onClose, onSave }) {
+export function AddOrderModal({ open, order, orders, customers, priceItems, settings, onClose, onSave }) {
   const [draft, setDraft] = useState(() => createDraft(order, orders, priceItems));
   const [saving, setSaving] = useState(false);
 
@@ -67,7 +76,20 @@ export function AddOrderModal({ open, order, orders, customers, priceItems, onCl
     }
   }, [open, order, orders, priceItems]);
 
-  const totals = useMemo(() => calculateOrderTotals(draft.items || []), [draft.items]);
+  const routeDistanceKm = calculateRouteDistanceKm({
+    business: settings?.businessLocation,
+    customer: draft,
+    dhobi: settings?.dhobiLocation,
+  });
+  const fuelCostPerKm =
+    settings?.fuelCostPerKm ||
+    calculateFuelCostPerKm(settings?.petrolPricePerLitre, settings?.vehicleMileageKmPerLitre) ||
+    settings?.deliveryRatePerKm;
+  const deliveryCharge = calculateDeliveryCharge(routeDistanceKm, fuelCostPerKm);
+  const totals = useMemo(
+    () => calculateOrderTotals(draft.items || [], deliveryCharge),
+    [deliveryCharge, draft.items],
+  );
 
   if (!open) {
     return null;
@@ -110,6 +132,8 @@ export function AddOrderModal({ open, order, orders, customers, priceItems, onCl
       phone: customer.phone,
       address: customer.address,
       area: customer.area,
+      latitude: customer.latitude || "",
+      longitude: customer.longitude || "",
     }));
   };
 
@@ -121,6 +145,8 @@ export function AddOrderModal({ open, order, orders, customers, priceItems, onCl
       await onSave({
         ...draft,
         ...totals,
+        routeDistanceKm,
+        deliveryCharge,
         id: draft.id || draft.receiptId.toLowerCase(),
       });
       onClose();
@@ -192,6 +218,26 @@ export function AddOrderModal({ open, order, orders, customers, priceItems, onCl
           <label className="form-grid__wide">
             <span>Address</span>
             <textarea value={draft.address || ""} onChange={(event) => updateField("address", event.target.value)} />
+          </label>
+
+          <label>
+            <span>Latitude</span>
+            <input
+              type="number"
+              step="any"
+              value={draft.latitude || ""}
+              onChange={(event) => updateField("latitude", event.target.value)}
+            />
+          </label>
+
+          <label>
+            <span>Longitude</span>
+            <input
+              type="number"
+              step="any"
+              value={draft.longitude || ""}
+              onChange={(event) => updateField("longitude", event.target.value)}
+            />
           </label>
 
           <div className="line-items form-grid__wide">
@@ -355,6 +401,8 @@ export function AddOrderModal({ open, order, orders, customers, priceItems, onCl
           <div className="modal-summary form-grid__wide">
             <span>{totals.clothesCount} pcs</span>
             <span>{formatCurrency(totals.dhobiCost)} dhobi</span>
+            <span>{routeDistanceKm ? `${routeDistanceKm.toFixed(1)} km route` : "Route unavailable"}</span>
+            <span>{formatCurrency(deliveryCharge)} fuel</span>
             <strong>{formatCurrency(totals.totalAmount)}</strong>
           </div>
 

@@ -61,7 +61,7 @@ function useLocalDataState() {
 }
 
 function buildOrderPayload(order) {
-  const totals = calculateOrderTotals(order.items || []);
+  const totals = calculateOrderTotals(order.items || [], order.deliveryCharge);
 
   return {
     ...order,
@@ -132,6 +132,8 @@ export function useWashoraData({ enabled = true } = {}) {
         phone: order.phone,
         address: order.address,
         area: order.area,
+        latitude: order.latitude,
+        longitude: order.longitude,
         notes: order.customerNotes || "",
       };
 
@@ -196,6 +198,8 @@ export function useWashoraData({ enabled = true } = {}) {
         phone: customer.phone?.trim() || "",
         address: customer.address?.trim() || "",
         area: customer.area?.trim() || "",
+        latitude: customer.latitude === "" ? "" : Number(customer.latitude),
+        longitude: customer.longitude === "" ? "" : Number(customer.longitude),
         notes: customer.notes?.trim() || "",
         updatedAt: new Date().toISOString(),
       };

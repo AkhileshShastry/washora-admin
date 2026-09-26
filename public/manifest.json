@@ -3,10 +3,14 @@
   "short_name": "Washora",
   "description": "Laundry delivery tracking, pricing, expenses, and collections dashboard.",
   "start_url": "/",
+  "scope": "/",
+  "id": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#f6fbff",
   "theme_color": "#0f3d7a",
   "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/washora-logo.jpeg",

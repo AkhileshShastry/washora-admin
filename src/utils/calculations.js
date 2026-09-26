@@ -1,6 +1,6 @@
 import { isSameDay, isSameMonth, sum, toDate } from "./helpers";
 
-export function calculateOrderTotals(items) {
+export function calculateOrderTotals(items, deliveryCharge = 0) {
   const normalizedItems = items.map((item) => {
     const quantity = Number(item.quantity || 0);
     const customerPrice = Number(item.customerPrice || 0);
@@ -22,9 +22,10 @@ export function calculateOrderTotals(items) {
   return {
     items: normalizedItems,
     clothesCount: sum(normalizedItems, (item) => item.quantity),
-    totalAmount: sum(normalizedItems, (item) => item.lineTotal),
+    deliveryCharge: Number(deliveryCharge || 0),
+    totalAmount: sum(normalizedItems, (item) => item.lineTotal) + Number(deliveryCharge || 0),
     dhobiCost: sum(normalizedItems, (item) => item.lineDhobiCost),
-    grossProfit: sum(normalizedItems, (item) => item.lineProfit),
+    grossProfit: sum(normalizedItems, (item) => item.lineProfit) + Number(deliveryCharge || 0),
   };
 }
 

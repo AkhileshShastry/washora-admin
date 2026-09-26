@@ -1,6 +1,7 @@
 import {
   CalendarDays,
   CheckCircle2,
+  Download,
   Edit3,
   IndianRupee,
   Phone,
@@ -8,6 +9,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "../../utils/helpers";
+import { downloadInvoice } from "../../services/invoiceService";
 import { ORDER_STATUSES, PAYMENT_STATUSES } from "../../utils/statuses";
 import { StatusPill } from "../common/StatusPill";
 
@@ -40,6 +42,13 @@ export function OrderCard({ order, onEdit, onDelete, onStatusChange }) {
           <IndianRupee size={15} />
           {order.paymentMode || "Mode pending"}
         </span>
+        {order.deliveryCharge ? (
+          <span>
+            <IndianRupee size={15} />
+            {formatCurrency(order.deliveryCharge)} delivery
+            {order.routeDistanceKm ? ` (${Number(order.routeDistanceKm).toFixed(1)} km)` : ""}
+          </span>
+        ) : null}
       </div>
 
       <p className="order-card__services">{serviceSummary || order.serviceType || "No items"}</p>
@@ -92,6 +101,9 @@ export function OrderCard({ order, onEdit, onDelete, onStatusChange }) {
         ) : null}
         <button className="icon-button" type="button" onClick={() => onEdit(order)} title="Edit order">
           <Edit3 size={18} />
+        </button>
+        <button className="icon-button" type="button" onClick={() => downloadInvoice(order)} title="Download invoice">
+          <Download size={18} />
         </button>
         <button className="icon-button icon-button--danger" type="button" onClick={() => onDelete(order.id)} title="Delete order">
           <Trash2 size={18} />
