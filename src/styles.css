@@ -281,6 +281,90 @@ a {
   gap: 12px;
 }
 
+.dashboard-section {
+  display: grid;
+  gap: 14px;
+}
+
+.dashboard-section--operations {
+  margin-top: 6px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.dashboard-section__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.dashboard-section__header h2 {
+  margin-top: 2px;
+  color: var(--ink);
+  font-size: 1.2rem;
+}
+
+.period-filter {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.segmented-control {
+  display: inline-grid;
+  grid-template-columns: repeat(3, auto);
+  padding: 3px;
+  background: #e8eef4;
+  border: 1px solid #d2dee8;
+  border-radius: 8px;
+}
+
+.segmented-control button {
+  min-height: 36px;
+  padding: 0 11px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.segmented-control button.segmented-control__active {
+  color: var(--navy);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 47, 102, 0.12);
+}
+
+.period-select {
+  display: grid;
+  gap: 3px;
+}
+
+.period-select span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.period-select select {
+  min-width: 88px;
+  min-height: 42px;
+  padding: 0 30px 0 10px;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.period-select--month select {
+  min-width: 122px;
+}
+
 .metric-card {
   display: flex;
   min-height: 116px;
@@ -1212,6 +1296,24 @@ textarea {
     left: 12px;
     right: 12px;
   }
+
+  .period-filter {
+    display: grid;
+    grid-template-columns: minmax(88px, 1fr) minmax(122px, 1.4fr);
+    width: 100%;
+  }
+
+  .segmented-control {
+    grid-column: 1 / -1;
+  }
+
+  .segmented-control button {
+    padding-inline: 8px;
+  }
+
+  .period-select select {
+    width: 100%;
+  }
 }
 
 @media (min-width: 680px) {
@@ -1221,6 +1323,10 @@ textarea {
 
   .metric-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .metric-grid--dashboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .split-grid,
@@ -1288,6 +1394,10 @@ textarea {
 
   .metric-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .metric-grid--dashboard {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .order-grid,

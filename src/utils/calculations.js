@@ -1,4 +1,36 @@
-import { isSameDay, isSameMonth, sum, toDate } from "./helpers";
+import { isSameDay, sum, toDate } from "./helpers";
+
+export const WASHORA_START_YEAR = 2026;
+export const WASHORA_START_MONTH = 5;
+
+function filterByPeriod(items, field, period) {
+  return items.filter((item) => {
+    const date = toDate(item[field]);
+    if (!date) {
+      return false;
+    }
+
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const isBeforeWashora =
+      year < WASHORA_START_YEAR ||
+      (year === WASHORA_START_YEAR && month < WASHORA_START_MONTH);
+
+    if (isBeforeWashora) {
+      return false;
+    }
+
+    if (!period || period.mode === "all") {
+      return true;
+    }
+
+    if (year !== period.year) {
+      return false;
+    }
+
+    return period.mode === "year" || month === period.month;
+  });
+}
 
 export function calculateOrderTotals(items, deliveryCharge = 0) {
   const normalizedItems = items.map((item) => {
@@ -29,27 +61,27 @@ export function calculateOrderTotals(items, deliveryCharge = 0) {
   };
 }
 
-export function buildDashboardMetrics({ orders, expenses, today = new Date() }) {
+export function buildDashboardMetrics({ orders, expenses, period, today = new Date() }) {
+  const periodOrders = filterByPeriod(orders, "orderDate", period);
+  const periodExpenses = filterByPeriod(expenses, "date", period);
+  const periodPaidOrders = periodOrders.filter(isPaidOrder);
   const deliveredOrders = orders.filter((order) => order.orderStatus === "Delivered");
-  const paidOrders = orders.filter((order) => order.paymentStatus === "Done");
   const activeOrders = orders.filter((order) => order.orderStatus !== "Delivered");
   const pendingPayments = orders.filter((order) => order.paymentStatus !== "Done");
-  const monthlyPaidOrders = paidOrders.filter((order) => isSameMonth(order.orderDate, today));
-  const monthlyExpenses = expenses.filter((expense) => isSameMonth(expense.date, today));
+  const periodRevenue = sum(periodPaidOrders, (order) => order.totalAmount);
+  const periodExpenseAmount = sum(periodExpenses, (expense) => expense.amount);
 
   return {
-    totalOrders: orders.length,
+    totalOrders: periodOrders.length,
     activeOrders: activeOrders.length,
     deliveredOrders: deliveredOrders.length,
     todayPickups: orders.filter((order) => isSameDay(order.pickupDate, today)).length,
     todayDeliveries: orders.filter((order) => isSameDay(order.deliveryDate, today)).length,
     pendingPaymentCount: pendingPayments.length,
     pendingPaymentAmount: sum(pendingPayments, (order) => order.totalAmount),
-    monthlyRevenue: sum(monthlyPaidOrders, (order) => order.totalAmount),
-    monthlyExpenses: sum(monthlyExpenses, (expense) => expense.amount),
-    monthlyProfit:
-      sum(monthlyPaidOrders, (order) => order.totalAmount) -
-      sum(monthlyExpenses, (expense) => expense.amount),
+    periodRevenue,
+    periodExpenses: periodExpenseAmount,
+    periodProfit: periodRevenue - periodExpenseAmount,
   };
 }
 
@@ -78,10 +110,12 @@ function monthLabel(key) {
   }).format(new Date(year, month - 1, 1));
 }
 
-export function buildProfitLossSummary({ orders, expenses }) {
-  const paidOrders = orders.filter(isPaidOrder);
+export function buildProfitLossSummary({ orders, expenses, period }) {
+  const periodOrders = filterByPeriod(orders, "orderDate", period);
+  const periodExpenses = filterByPeriod(expenses, "date", period);
+  const paidOrders = periodOrders.filter(isPaidOrder);
   const totalRevenue = sum(paidOrders, (order) => order.totalAmount);
-  const totalExpenses = sum(expenses, (expense) => expense.amount);
+  const totalExpenses = sum(periodExpenses, (expense) => expense.amount);
   const netProfit = totalRevenue - totalExpenses;
   const comparisonMax = Math.max(totalRevenue, totalExpenses, 1);
   const monthlyMap = new Map();
@@ -97,7 +131,7 @@ export function buildProfitLossSummary({ orders, expenses }) {
     monthlyMap.set(key, current);
   });
 
-  expenses.forEach((expense) => {
+  periodExpenses.forEach((expense) => {
     const key = monthKey(expense.date);
     if (!key) {
       return;
@@ -108,9 +142,8 @@ export function buildProfitLossSummary({ orders, expenses }) {
     monthlyMap.set(key, current);
   });
 
-  const monthlyRows = [...monthlyMap.values()]
-    .sort((a, b) => a.key.localeCompare(b.key))
-    .slice(-6);
+  const sortedMonthlyRows = [...monthlyMap.values()].sort((a, b) => a.key.localeCompare(b.key));
+  const monthlyRows = period?.mode === "all" ? sortedMonthlyRows.slice(-6) : sortedMonthlyRows;
   const monthlyMax = Math.max(
     ...monthlyRows.flatMap((row) => [row.revenue, row.expenses]),
     1,
@@ -121,7 +154,7 @@ export function buildProfitLossSummary({ orders, expenses }) {
     totalExpenses,
     netProfit,
     paidOrderCount: paidOrders.length,
-    expenseCount: expenses.length,
+    expenseCount: periodExpenses.length,
     marginPercent: totalRevenue ? Math.round((netProfit / totalRevenue) * 100) : 0,
     revenuePercent: Math.round((totalRevenue / comparisonMax) * 100),
     expensePercent: Math.round((totalExpenses / comparisonMax) * 100),
