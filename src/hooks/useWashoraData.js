@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createSeedData } from "../data/seedData";
 import {
+  createExpenseSettlement,
   deleteDocument,
   importDataToFirestore,
   seedFirestore,
@@ -39,6 +40,7 @@ function emptyData() {
     orders: [],
     customers: [],
     expenses: [],
+    settlements: [],
     priceItems: [],
     settings: createSeedData().settings,
   };
@@ -90,7 +92,7 @@ export function useWashoraData({ enabled = true } = {}) {
     setLoading(true);
     setError("");
 
-    const collections = ["orders", "customers", "expenses", "priceItems", "settings"];
+    const collections = ["orders", "customers", "expenses", "settlements", "priceItems", "settings"];
     const unsubscribers = collections.map((name) =>
       subscribeToCollection(
         name,
@@ -225,6 +227,8 @@ export function useWashoraData({ enabled = true } = {}) {
         ...expense,
         id,
         amount: Number(expense.amount || 0),
+        settlementStatus:
+          expense.settlementStatus || (expense.settlementId ? "Settled" : "Unsettled"),
         updatedAt: new Date().toISOString(),
       };
 
@@ -254,6 +258,67 @@ export function useWashoraData({ enabled = true } = {}) {
       }
     },
     [setLocalData],
+  );
+
+  const createSettlement = useCallback(
+    async (settlement) => {
+      const expenseIds = [...new Set(settlement.expenseIds || [])].filter(Boolean);
+      const selectedExpenses = data.expenses.filter((expense) => expenseIds.includes(expense.id));
+
+      if (!expenseIds.length || selectedExpenses.length !== expenseIds.length) {
+        throw new Error("Select at least one available expense to settle.");
+      }
+
+      if (selectedExpenses.some((expense) => expense.settlementStatus === "Settled" || expense.settlementId)) {
+        throw new Error("One of the selected expenses has already been settled.");
+      }
+
+      const paidTo = selectedExpenses[0]?.paidBy;
+      if (!paidTo || selectedExpenses.some((expense) => expense.paidBy !== paidTo)) {
+        throw new Error("A settlement can contain expenses paid by one founder only.");
+      }
+
+      const id = settlement.id || makeId("settlement");
+      const amount = selectedExpenses.reduce(
+        (total, expense) => total + Number(expense.amount || 0),
+        0,
+      );
+      const payload = {
+        ...settlement,
+        id,
+        expenseIds,
+        expenseCount: expenseIds.length,
+        paidTo,
+        amount,
+        createdAt: new Date().toISOString(),
+      };
+
+      if (isFirebaseConfigured) {
+        return createExpenseSettlement(payload, expenseIds);
+      }
+
+      if (isDemoModeEnabled) {
+        setLocalData((current) => ({
+          ...current,
+          settlements: [...(current.settlements || []), payload],
+          expenses: current.expenses.map((expense) =>
+            expenseIds.includes(expense.id)
+              ? {
+                  ...expense,
+                  settlementStatus: "Settled",
+                  settlementId: id,
+                  settledAt: payload.settlementDate,
+                  settlementMode: payload.paymentMode,
+                  updatedAt: new Date().toISOString(),
+                }
+              : expense,
+          ),
+        }));
+      }
+
+      return payload;
+    },
+    [data.expenses, setLocalData],
   );
 
   const upsertPriceItem = useCallback(
@@ -357,6 +422,7 @@ export function useWashoraData({ enabled = true } = {}) {
       upsertCustomer,
       upsertExpense,
       deleteExpense,
+      createSettlement,
       upsertPriceItem,
       updateSettings,
       seedRemote,
@@ -375,6 +441,7 @@ export function useWashoraData({ enabled = true } = {}) {
       upsertCustomer,
       upsertExpense,
       deleteExpense,
+      createSettlement,
       upsertPriceItem,
       updateSettings,
       seedRemote,

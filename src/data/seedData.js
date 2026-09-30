@@ -535,6 +535,7 @@ export function createSeedData() {
     orders: seedOrders,
     customers: seedCustomers,
     expenses: seedExpenses,
+    settlements: [],
     priceItems: seedPrices.map((price) => ({
       ...price,
       profit: Number(price.customerPrice || 0) - Number(price.dhobiCost || 0),

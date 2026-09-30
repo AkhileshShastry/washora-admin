@@ -2,6 +2,7 @@ import { Edit3, IndianRupee, Plus, Save, Search, Trash2, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react";
 import { EmptyState } from "../components/common/EmptyState";
 import { formatCurrency, formatDate, makeId, normalizeSearch, sortByDateDesc, sum } from "../utils/helpers";
+import { getExpenseSettlementStatus, isExpenseSettled } from "../utils/settlements";
 import { EXPENSE_TYPES, STAFF_MEMBERS } from "../utils/statuses";
 
 function createEmptyExpense() {
@@ -11,6 +12,7 @@ function createEmptyExpense() {
     description: "",
     amount: "",
     paidBy: STAFF_MEMBERS[0],
+    settlementStatus: "Unsettled",
   };
 }
 
@@ -47,7 +49,7 @@ function ExpenseModal({ open, expense, onClose, onSave }) {
     setSaving(true);
 
     try {
-      await onSave({ ...draft, id: expense?.id || makeId("expense") });
+      await onSave({ ...(expense || {}), ...draft, id: expense?.id || makeId("expense") });
       onClose();
     } finally {
       setSaving(false);
@@ -149,7 +151,7 @@ export function Expenses({ expenses, onSaveExpense, onDeleteExpense }) {
     return sortByDateDesc(expenses, "date").filter((expense) =>
       search
         ? normalizeSearch(
-            `${expense.expenseType} ${expense.description} ${expense.paidBy} ${expense.amount}`,
+            `${expense.expenseType} ${expense.description} ${expense.paidBy} ${expense.amount} ${getExpenseSettlementStatus(expense)}`,
           ).includes(search)
         : true,
     );
@@ -194,14 +196,22 @@ export function Expenses({ expenses, onSaveExpense, onDeleteExpense }) {
       <section className="data-list">
         {visibleExpenses.length ? (
           visibleExpenses.map((expense) => (
-            <article className="data-row" key={expense.id}>
+            <article className="data-row expense-row" key={expense.id}>
               <div>
                 <strong>{expense.description || expense.expenseType}</strong>
                 <span>
                   {formatDate(expense.date)} - {expense.expenseType} - {expense.paidBy}
                 </span>
               </div>
-              <strong>{formatCurrency(expense.amount)}</strong>
+              <div className="expense-row__amount">
+                <strong>{formatCurrency(expense.amount)}</strong>
+                <span
+                  className={`settlement-chip settlement-chip--${isExpenseSettled(expense) ? "settled" : "unsettled"}`}
+                >
+                  <span aria-hidden="true" />
+                  {getExpenseSettlementStatus(expense)}
+                </span>
+              </div>
               <div className="data-row__actions">
                 <button
                   className="icon-button"
