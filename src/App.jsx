@@ -8,6 +8,7 @@ import { Login } from "./pages/Login";
 import { Orders } from "./pages/Orders";
 import { Pricing } from "./pages/Pricing";
 import { Settings } from "./pages/Settings";
+import { Settlements } from "./pages/Settlements";
 import { useAuth } from "./hooks/useAuth";
 import { useWashoraData } from "./hooks/useWashoraData";
 import { initFirebaseAnalytics } from "./services/firebase";
@@ -46,6 +47,7 @@ export default function App() {
     orders: data.orders,
     customers: data.customers,
     expenses: data.expenses,
+    settlements: data.settlements,
     priceItems: data.priceItems,
     settings: data.settings,
   };
@@ -66,6 +68,13 @@ export default function App() {
         expenses={data.expenses}
         onSaveExpense={data.upsertExpense}
         onDeleteExpense={data.deleteExpense}
+      />
+    ),
+    Settlements: (
+      <Settlements
+        expenses={data.expenses}
+        settlements={data.settlements}
+        onCreateSettlement={data.createSettlement}
       />
     ),
     Pricing: <Pricing priceItems={data.priceItems} onSavePriceItem={data.upsertPriceItem} />,

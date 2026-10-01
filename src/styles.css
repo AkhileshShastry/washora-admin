@@ -42,6 +42,12 @@ button {
   cursor: pointer;
 }
 
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .pwa-install-prompt {
   align-items: center;
   background: #ffffff;
@@ -239,7 +245,7 @@ a {
   bottom: 0;
   z-index: 30;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 2px;
   padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
   background: rgba(255, 255, 255, 0.96);
@@ -931,6 +937,357 @@ textarea {
   min-width: 0;
 }
 
+.expense-row__amount {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  text-align: right;
+}
+
+.settlement-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.settlement-chip > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.data-row .settlement-chip--settled,
+.settlement-chip--settled {
+  color: #0f6a45;
+  background: #dff7ea;
+}
+
+.data-row .settlement-chip--unsettled,
+.settlement-chip--unsettled {
+  color: #9b2c23;
+  background: #fff0ed;
+}
+
+.settlement-total {
+  justify-content: flex-start;
+}
+
+.settlement-total small {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.settlement-balances {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.settlement-balance {
+  display: grid;
+  gap: 3px;
+  padding: 13px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.settlement-balance span,
+.settlement-balance small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.settlement-balance strong {
+  color: var(--ink);
+  font-size: 1.12rem;
+}
+
+.settlement-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  background: #eaf1f6;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.settlement-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font-weight: 850;
+}
+
+.settlement-tabs .settlement-tabs__active {
+  color: var(--navy);
+  background: #ffffff;
+  box-shadow: 0 3px 10px rgba(15, 47, 102, 0.08);
+}
+
+.settlement-filter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.settlement-filter label {
+  width: min(230px, 100%);
+}
+
+.settlement-date-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding-left: 10px;
+  color: var(--muted);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.settlement-date-field input {
+  min-width: 0;
+  border: 0;
+}
+
+.settlement-groups {
+  display: grid;
+  gap: 12px;
+}
+
+.settlement-group {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.settlement-group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #f4f9fd;
+  border-bottom: 1px solid var(--line);
+}
+
+.settlement-group__header > div {
+  display: grid;
+  gap: 2px;
+}
+
+.settlement-group__header strong {
+  color: var(--ink);
+}
+
+.settlement-group__header > div span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.settlement-select-all {
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 9px;
+  color: var(--navy);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.settlement-select-all input,
+.settlement-expense-row > input {
+  width: 17px;
+  height: 17px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--blue);
+}
+
+.settlement-select-all span {
+  color: inherit;
+  font-size: 0.76rem;
+}
+
+.settlement-expense-list {
+  display: grid;
+}
+
+.settlement-expense-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.settlement-expense-row:last-child {
+  border-bottom: 0;
+}
+
+.settlement-expense-row:hover {
+  background: #f8fbfd;
+}
+
+.settlement-expense-row > div {
+  min-width: 0;
+}
+
+.settlement-expense-row strong,
+.settlement-expense-row span {
+  display: block;
+}
+
+.settlement-expense-row > strong {
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.settlement-expense-row span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.settlement-selection-bar {
+  position: sticky;
+  bottom: 82px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #bad5e9;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(15, 47, 102, 0.16);
+}
+
+.settlement-selection-bar > div {
+  min-width: 0;
+}
+
+.settlement-selection-bar span,
+.settlement-selection-bar strong {
+  display: block;
+}
+
+.settlement-selection-bar span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settlement-selection-bar strong {
+  color: var(--navy);
+  font-size: 1.05rem;
+}
+
+.settlement-modal-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px;
+  background: #eef8ff;
+  border: 1px solid #d5edf7;
+  border-radius: 8px;
+}
+
+.settlement-modal-summary div {
+  display: grid;
+  gap: 2px;
+}
+
+.settlement-modal-summary span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.settlement-modal-summary strong {
+  color: var(--navy);
+  font-size: 1.12rem;
+}
+
+.settlement-history-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  padding: 13px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.settlement-history-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  color: #0f6a45;
+  background: #dff7ea;
+  border-radius: 8px;
+}
+
+.settlement-history-row > div {
+  min-width: 0;
+}
+
+.settlement-history-row strong,
+.settlement-history-row span,
+.settlement-history-row small {
+  display: block;
+}
+
+.settlement-history-row > strong {
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.settlement-history-row div span,
+.settlement-history-row small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
 .table-shell {
   overflow: hidden;
 }
@@ -1314,6 +1671,61 @@ textarea {
   .period-select select {
     width: 100%;
   }
+
+  .settlement-filter label {
+    width: 100%;
+  }
+
+  .settlement-selection-bar {
+    display: grid;
+    align-items: stretch;
+  }
+
+  .settlement-selection-bar .primary-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 479px) {
+  .expense-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .expense-row .expense-row__amount {
+    grid-column: 1;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .expense-row .data-row__actions {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .settlement-total {
+    flex-wrap: wrap;
+  }
+
+  .settlement-total small {
+    width: 100%;
+    margin-left: 36px;
+  }
+
+  .settlement-expense-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .settlement-expense-row > strong {
+    grid-column: 2;
+  }
+
+  .settlement-history-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .settlement-history-row > strong {
+    grid-column: 2;
+  }
 }
 
 @media (min-width: 680px) {
@@ -1386,6 +1798,10 @@ textarea {
 
   .bottom-nav__item {
     min-height: 72px;
+  }
+
+  .settlement-selection-bar {
+    bottom: 16px;
   }
 
   .app-header {
