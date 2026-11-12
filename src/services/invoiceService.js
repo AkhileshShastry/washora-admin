@@ -96,69 +96,134 @@ export async function downloadInvoice(order) {
   doc.text("Receipt / Invoice No.", contentRight, 83, { align: "right" });
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
-  doc.text(String(order.receiptId || "Invoice"), contentRight, 92, { align: "right" });
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text(`Delivery: ${formatDate(order.deliveryDate || order.orderDate)}`, contentRight, 102, {
+  doc.text(String(order.receiptId || "Invoice"), contentRight, 92, {
     align: "right",
   });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.text(
+    `Delivery: ${formatDate(order.deliveryDate || order.orderDate)}`,
+    contentRight,
+    102,
+    {
+      align: "right",
+    },
+  );
 
   const itemTop = 119;
+  const items = order.items?.length
+    ? order.items
+    : [
+        {
+          serviceType: order.serviceType || "Laundry Service",
+          quantity: order.clothesCount || 1,
+          customerPrice:
+            Number(order.totalAmount || 0) / Number(order.clothesCount || 1),
+          lineTotal: order.totalAmount,
+        },
+      ];
+  const invoiceItems = items.map((item) => {
+    const quantity = Number(item.quantity || 0);
+    const lineTotal = Number(
+      item.lineTotal ?? quantity * Number(item.customerPrice || 0),
+    );
+
+    return {
+      serviceType: item.serviceType || "Laundry Service",
+      quantity,
+      unitPrice: quantity
+        ? lineTotal / quantity
+        : Number(item.customerPrice || 0),
+      lineTotal,
+      serviceLines: doc.splitTextToSize(
+        item.serviceType || "Laundry Service",
+        76,
+      ),
+    };
+  });
+  const itemsSubtotal = invoiceItems.reduce(
+    (total, item) => total + item.lineTotal,
+    0,
+  );
+  const deliveryCharge = Number(order.deliveryCharge || 0);
+  const totalAmount = Number(
+    order.totalAmount ?? itemsSubtotal + deliveryCharge,
+  );
+  const itemRowHeights = invoiceItems.map((item) =>
+    Math.max(10, item.serviceLines.length * 4 + 3),
+  );
+  const itemCardHeight = Math.max(
+    47,
+    21 + itemRowHeights.reduce((total, height) => total + height, 0),
+  );
+
   doc.setFillColor(245, 248, 253);
-  doc.roundedRect(contentLeft, itemTop, 186, 47, 7, 7, "F");
-  const items = order.items?.length ? order.items : [{
-    serviceType: order.serviceType || "Laundry Service",
-    quantity: order.clothesCount || 1,
-    customerPrice: Number(order.totalAmount || 0) / Number(order.clothesCount || 1),
-    lineTotal: order.totalAmount,
-  }];
-  const serviceName = items.map((item) => item.serviceType).filter(Boolean).join(", ") || "Laundry Service";
+  doc.roundedRect(contentLeft, itemTop, 186, itemCardHeight, 7, 7, "F");
 
   doc.setTextColor(...blue);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
-  doc.text(serviceName, 19, itemTop + 11);
+  doc.setFontSize(10);
+  doc.text("Services", 19, itemTop + 11);
   doc.setTextColor(...muted);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
-  doc.text("Quantity", 19, itemTop + 23);
-  doc.text("Price / Unit", 84, itemTop + 23);
-  doc.text("GST", 126, itemTop + 23);
-  doc.text("Amount", 188, itemTop + 23, { align: "right" });
+  doc.text("Qty", 102, itemTop + 11);
+  doc.text("Price / Unit", 124, itemTop + 11);
+  doc.text("GST", 155, itemTop + 11);
+  doc.text("Amount", 188, itemTop + 11, { align: "right" });
 
-  doc.setTextColor(0, 0, 0);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  const quantity = items.reduce((total, item) => total + Number(item.quantity || 0), 0);
-  const unitPrice = quantity ? Number(order.totalAmount || 0) / quantity : 0;
-  doc.text(`${quantity} clothes`, 19, itemTop + 36);
-  doc.text(formatAmount(unitPrice), 84, itemTop + 36);
-  doc.text("--", 126, itemTop + 36);
-  doc.text(formatAmount(order.totalAmount), 188, itemTop + 36, { align: "right" });
+  let rowTop = itemTop + 17;
+  invoiceItems.forEach((item, index) => {
+    const rowHeight = itemRowHeights[index];
+    const textY = rowTop + 5;
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.text(item.serviceLines, 19, textY);
+    doc.text(String(item.quantity), 102, textY);
+    doc.text(formatAmount(item.unitPrice), 124, textY);
+    doc.text("--", 155, textY);
+    doc.text(formatAmount(item.lineTotal), 188, textY, { align: "right" });
 
-  const summaryTop = 181;
+    rowTop += rowHeight;
+    if (index < invoiceItems.length - 1) {
+      doc.setDrawColor(...line);
+      doc.setLineWidth(0.25);
+      doc.line(19, rowTop, 191, rowTop);
+    }
+  });
+
+  const summaryTop = itemTop + itemCardHeight + 10;
+  const summaryHeight = deliveryCharge > 0 ? 52 : 43;
   doc.setDrawColor(...line);
-  doc.roundedRect(contentLeft, summaryTop, 186, 43, 7, 7, "S");
+  doc.roundedRect(contentLeft, summaryTop, 186, summaryHeight, 7, 7, "S");
   doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.text("Pricing / Breakup", 19, summaryTop + 11);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  doc.text("Sub Total", 19, summaryTop + 23);
-  drawRightAligned(doc, formatAmount(order.totalAmount), summaryTop + 23, 10);
+  const subtotalY = deliveryCharge > 0 ? summaryTop + 22 : summaryTop + 23;
+  doc.text("Sub Total", 19, subtotalY);
+  drawRightAligned(doc, formatAmount(itemsSubtotal), subtotalY, 10);
+  if (deliveryCharge > 0) {
+    doc.text("Delivery Charge", 19, summaryTop + 33);
+    drawRightAligned(doc, formatAmount(deliveryCharge), summaryTop + 33, 10);
+  }
   doc.setTextColor(...blue);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("Total Amount", 19, summaryTop + 35);
-  doc.text(formatAmount(order.totalAmount), 188, summaryTop + 35, { align: "right" });
+  const totalY = deliveryCharge > 0 ? summaryTop + 45 : summaryTop + 35;
+  doc.text("Total Amount", 19, totalY);
+  doc.text(formatAmount(totalAmount), 188, totalY, { align: "right" });
 
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(10);
-  doc.text("Official UPI Payment Reference", contentLeft, 244);
+  const paymentTop = Math.max(244, summaryTop + summaryHeight + 15);
+  doc.text("Official UPI Payment Reference", contentLeft, paymentTop);
 
   const qrBoxX = 18;
-  const qrBoxY = 248;
+  const qrBoxY = paymentTop + 4;
   const qrSize = 42;
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(1.0);
@@ -167,15 +232,17 @@ export async function downloadInvoice(order) {
 
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...muted);
-  doc.text(`Instagram: ${BUSINESS.instagram}`, 70, 256);
-  doc.text(`Email: ${BUSINESS.email}`, 70, 265);
-  doc.text(`Phone / WhatsApp: ${BUSINESS.phone}`, 70, 274);
-  doc.text(`UPI ID: ${BUSINESS.upiId}`, 70, 283);
+  doc.text(`Instagram: ${BUSINESS.instagram}`, 70, qrBoxY + 8);
+  doc.text(`Email: ${BUSINESS.email}`, 70, qrBoxY + 17);
+  doc.text(`Phone / WhatsApp: ${BUSINESS.phone}`, 70, qrBoxY + 26);
+  doc.text(`UPI ID: ${BUSINESS.upiId}`, 70, qrBoxY + 35);
 
   doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("Thank you for doing business with us", pageWidth / 2, 292, { align: "center" });
+  doc.text("Thank you for doing business with us", pageWidth / 2, 292, {
+    align: "center",
+  });
 
   const filename = `washora-invoice-${String(order.receiptId || "invoice").replace(/[^a-z0-9-_]/gi, "-")}.pdf`;
   doc.save(filename);
