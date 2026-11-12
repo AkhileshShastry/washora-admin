@@ -5,6 +5,7 @@ const COLLECTIONS = {
   orders: "orders",
   customers: "customers",
   expenses: "expenses",
+  settlements: "settlements",
   priceItems: "priceItems",
   settings: "settings",
 };
@@ -82,6 +83,74 @@ export async function deleteDocument(collectionName, id) {
   await deleteDoc(doc(db, COLLECTIONS[collectionName], id));
 }
 
+export async function createExpenseSettlement(settlement, expenseIds) {
+  const uniqueExpenseIds = [...new Set(expenseIds)].filter(Boolean);
+
+  if (!uniqueExpenseIds.length) {
+    throw new Error("Select at least one expense to settle.");
+  }
+
+  if (uniqueExpenseIds.length > 450) {
+    throw new Error("A settlement can include up to 450 expenses.");
+  }
+
+  const { db, doc, runTransaction, serverTimestamp } = await getFirestoreApi();
+
+  return runTransaction(db, async (transaction) => {
+    const expenseRefs = uniqueExpenseIds.map((id) => doc(db, COLLECTIONS.expenses, id));
+    const snapshots = await Promise.all(expenseRefs.map((ref) => transaction.get(ref)));
+    const expenses = snapshots.map((snapshot) => {
+      if (!snapshot.exists()) {
+        throw new Error("One of the selected expenses no longer exists.");
+      }
+
+      return { id: snapshot.id, ...snapshot.data() };
+    });
+
+    if (expenses.some((expense) => expense.settlementStatus === "Settled" || expense.settlementId)) {
+      throw new Error("One of the selected expenses has already been settled.");
+    }
+
+    const paidTo = expenses[0]?.paidBy;
+    if (!paidTo || expenses.some((expense) => expense.paidBy !== paidTo)) {
+      throw new Error("A settlement can contain expenses paid by one founder only.");
+    }
+
+    const amount = expenses.reduce((total, expense) => total + Number(expense.amount || 0), 0);
+    const storedSettlement = stripUndefined({
+      ...settlement,
+      expenseIds: uniqueExpenseIds,
+      expenseCount: uniqueExpenseIds.length,
+      paidTo,
+      amount,
+    });
+    const settlementRef = doc(db, COLLECTIONS.settlements, settlement.id);
+
+    transaction.set(
+      settlementRef,
+      withTimestamps({ ...storedSettlement, id: settlement.id }, serverTimestamp),
+      { merge: true },
+    );
+
+    expenseRefs.forEach((ref) => {
+      transaction.update(
+        ref,
+        withTimestamps(
+          {
+            settlementStatus: "Settled",
+            settlementId: settlement.id,
+            settledAt: settlement.settlementDate,
+            settlementMode: settlement.paymentMode,
+          },
+          serverTimestamp,
+        ),
+      );
+    });
+
+    return storedSettlement;
+  });
+}
+
 export async function importDataToFirestore(data, { source = "import" } = {}) {
   const { db, doc, serverTimestamp, writeBatch } = await getFirestoreApi();
   const writes = [];
@@ -108,6 +177,9 @@ export async function importDataToFirestore(data, { source = "import" } = {}) {
   (data.orders || []).forEach((order) => addWrite("orders", order.id, order));
   (data.customers || []).forEach((customer) => addWrite("customers", customer.id, customer));
   (data.expenses || []).forEach((expense) => addWrite("expenses", expense.id, expense));
+  (data.settlements || []).forEach((settlement) =>
+    addWrite("settlements", settlement.id, settlement),
+  );
   (data.priceItems || []).forEach((price) => addWrite("priceItems", price.id, price));
 
   if (data.settings) {
@@ -126,6 +198,7 @@ export async function importDataToFirestore(data, { source = "import" } = {}) {
     orders: data.orders?.length || 0,
     customers: data.customers?.length || 0,
     expenses: data.expenses?.length || 0,
+    settlements: data.settlements?.length || 0,
     priceItems: data.priceItems?.length || 0,
     settings: data.settings ? 1 : 0,
     totalWrites: writes.length,

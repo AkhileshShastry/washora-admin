@@ -488,6 +488,7 @@ function parseExpenses(rows) {
         description,
         amount,
         paidBy: stringValue(row.paidBy),
+        settlementStatus: "Unsettled",
       };
     })
     .filter(Boolean);
